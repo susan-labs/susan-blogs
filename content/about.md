@@ -10,15 +10,16 @@ This blog is where I document everything I learn: network setups, self-hosted se
 ## What you'll find here
 
 - Step-by-step homelab tutorials with real screenshots
-- Networking deep-dives (VLANs, DNS, VPNs)
+- Networking deep-dives (pfSense, VLANs, DNS, VPNs)
 - Self-hosted app setups (Proxmox, Docker, Kubernetes)
 - IT study notes and certification prep
 
 ## My setup
 
-- **Hypervisor**: Vmware ESXi 8
+- **Hypervisor**: Proxmox VE
+- **Firewall/Router**: pfSense
 - **Switching**: Managed VLAN switches
-- **DNS**: Adguard + Unbound
+- **DNS**: Pi-hole + Unbound
 
 ## Connect
 
