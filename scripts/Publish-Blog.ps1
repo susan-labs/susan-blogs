@@ -27,6 +27,8 @@ Write-Host ""
 Write-Host "=== Publish to GitHub ===" -ForegroundColor Green
 Write-Host ""
 
+$ExpectedOrigin = "git@github.com:susan-labs/susankhanal-blog.git"
+
 # --- Check git is available ---
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Host "git not found in PATH. Install Git for Windows." -ForegroundColor Red; exit 1
@@ -35,6 +37,14 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 # --- Check hugo is available ---
 if (-not (Get-Command hugo -ErrorAction SilentlyContinue)) {
     Write-Host "hugo not found in PATH." -ForegroundColor Red; exit 1
+}
+
+# --- Warn if git remote does not match expected repo ---
+$OriginUrl = git remote get-url origin 2>$null
+if ($LASTEXITCODE -eq 0 -and $OriginUrl -ne $ExpectedOrigin) {
+    Write-Host "Warning: origin does not match expected repo." -ForegroundColor Yellow
+    Write-Host "  origin:   $OriginUrl" -ForegroundColor Yellow
+    Write-Host "  expected: $ExpectedOrigin" -ForegroundColor Yellow
 }
 
 # --- Validate build ---
@@ -80,7 +90,7 @@ if (-not $Message.Trim()) {
 }
 
 # --- Git add / commit / push ---
-git add .
+git add content static scripts images.py hugo.toml README.md updateblog.ps1
 if ($LASTEXITCODE -ne 0) { Write-Host "git add failed." -ForegroundColor Red; exit 1 }
 
 git commit -m $Message

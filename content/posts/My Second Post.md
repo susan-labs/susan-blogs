@@ -7,4 +7,4 @@ tags:
   - tag2
 ---
 Hello, this is my second post
-!![Image Description](/images/Pasted%20image%2020260315153646.png)
+!![Pasted image 20260315153646](/images/Pasted%20image%2020260315153646.png)

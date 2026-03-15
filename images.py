@@ -1,36 +1,93 @@
-import os
+import argparse
 import re
 import shutil
+from pathlib import Path
+from urllib.parse import quote
 
-# Paths (using raw strings to handle Windows backslashes correctly)
-posts_dir = r"C:\Users\Susan\Susan-Blog-2026\content\posts"
-attachments_dir = r"C:\MyBlogs\MyBlogs\attachments"
-static_images_dir = r"C:\Users\Susan\Susan-Blog-2026\static\images"
 
-# Step 1: Process each markdown file in the posts directory
-for filename in os.listdir(posts_dir):
-    if filename.endswith(".md"):
-        filepath = os.path.join(posts_dir, filename)
-        
-        with open(filepath, "r", encoding="utf-8") as file:
-            content = file.read()
-        
-        # Step 2: Find all image links in the format ![Image Description](/images/Pasted%20image%20...%20.png)
-        images = re.findall(r'\[\[([^]]*\.png)\]\]', content)
-        
-        # Step 3: Replace image links and ensure URLs are correctly formatted
-        for image in images:
-            # Prepare the Markdown-compatible link with %20 replacing spaces
-            markdown_image = f"![Image Description](/images/{image.replace(' ', '%20')})"
-            content = content.replace(f"[[{image}]]", markdown_image)
-            
-            # Step 4: Copy the image to the Hugo static/images directory if it exists
-            image_source = os.path.join(attachments_dir, image)
-            if os.path.exists(image_source):
-                shutil.copy(image_source, static_images_dir)
+WIKILINK_PATTERN = re.compile(
+    r"\[\[([^\]|]+\.((?:png|jpg|jpeg|webp)))(?:\|([^\]]+))?\]\]",
+    re.IGNORECASE,
+)
 
-        # Step 5: Write the updated content back to the markdown file
-        with open(filepath, "w", encoding="utf-8") as file:
-            file.write(content)
 
-print("Markdown files processed and images copied successfully.")
+def sanitize_alt_text(value: str) -> str:
+    base = Path(value).stem
+    return re.sub(r"[-_]+", " ", base).strip() or "Image"
+
+
+def process_markdown_file(file_path: Path, attachments_dir: Path, static_images_dir: Path) -> int:
+    content = file_path.read_text(encoding="utf-8")
+    copied = 0
+
+    def replace_match(match: re.Match) -> str:
+        nonlocal copied
+
+        image_name = match.group(1)
+        custom_alt = match.group(3)
+        alt_text = (custom_alt or sanitize_alt_text(image_name)).strip()
+        encoded_name = quote(image_name)
+        image_source = attachments_dir / image_name
+
+        if image_source.exists():
+            destination = static_images_dir / image_name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(image_source, destination)
+            copied += 1
+
+        return f"![{alt_text}](/images/{encoded_name})"
+
+    updated_content = WIKILINK_PATTERN.sub(replace_match, content)
+    if updated_content != content:
+        file_path.write_text(updated_content, encoding="utf-8")
+
+    return copied
+
+
+def main() -> None:
+    script_dir = Path(__file__).resolve().parent
+
+    parser = argparse.ArgumentParser(
+        description="Convert Obsidian image wikilinks to Hugo markdown image links."
+    )
+    parser.add_argument(
+        "--posts-dir",
+        default=str(script_dir / "content" / "posts"),
+        help="Path to Hugo posts directory.",
+    )
+    parser.add_argument(
+        "--attachments-dir",
+        default=r"C:\MyBlogs\MyBlogs\attachments",
+        help="Path to Obsidian attachments directory.",
+    )
+    parser.add_argument(
+        "--static-images-dir",
+        default=str(script_dir / "static" / "images"),
+        help="Path to Hugo static images directory.",
+    )
+    args = parser.parse_args()
+
+    posts_dir = Path(args.posts_dir)
+    attachments_dir = Path(args.attachments_dir)
+    static_images_dir = Path(args.static_images_dir)
+
+    if not posts_dir.exists():
+        raise SystemExit(f"Posts directory not found: {posts_dir}")
+    if not attachments_dir.exists():
+        raise SystemExit(f"Attachments directory not found: {attachments_dir}")
+
+    total_copied = 0
+    processed_files = 0
+
+    for markdown_file in posts_dir.rglob("*.md"):
+        copied = process_markdown_file(markdown_file, attachments_dir, static_images_dir)
+        total_copied += copied
+        processed_files += 1
+
+    print(
+        f"Processed {processed_files} markdown files. Copied {total_copied} image file(s) to static/images."
+    )
+
+
+if __name__ == "__main__":
+    main()
