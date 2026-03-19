@@ -10,17 +10,18 @@ This blog is where I document everything I learn: network setups, self-hosted se
 ## What you'll find here
 
 - Step-by-step homelab tutorials with real screenshots
-- Networking deep-dives (pfSense, VLANs, DNS, VPNs)
-- Self-hosted app setups (Proxmox, Docker, Kubernetes)
+- Networking deep-dives (Linux, VLANs, DNS, VPNs)
+- Self-hosted app setups (ESXi, Docker)
 - IT study notes and certification prep
 
 ## My setup
 
-- **Hypervisor**: Proxmox VE
-- **Firewall/Router**: pfSense
-- **Switching**: Managed VLAN switches
-- **DNS**: Pi-hole + Unbound
+- **Hypervisor**: VMWare ESXi
+- **DNS**: AdGuard Home
+- **SIEM**: Wazuh
+- **RMM**: MeshCentral
+- **Cloud**: Oracle Linux
 
 ## Connect
 
-Got questions or found an error? Reach out — I'm always learning.
+Got questions or found an error? Reach out at susan@susankhanal.com — I'm always learning.
