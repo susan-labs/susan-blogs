@@ -2,25 +2,46 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Susan Khanal</title>
-    <link>http://localhost:50748/tags/</link>
+    <link>https://susan-blogs.pages.dev/tags/</link>
     <description>Recent content in Tags on Susan Khanal</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>© 2026 Susan Khanal</copyright>
-    <lastBuildDate>Wed, 06 Nov 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:50748/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 15 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://susan-blogs.pages.dev/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Esxi</title>
+      <link>https://susan-blogs.pages.dev/tags/esxi/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://susan-blogs.pages.dev/tags/esxi/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Virtualisation</title>
+      <link>https://susan-blogs.pages.dev/tags/virtualisation/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://susan-blogs.pages.dev/tags/virtualisation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vmware</title>
+      <link>https://susan-blogs.pages.dev/tags/vmware/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://susan-blogs.pages.dev/tags/vmware/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Tag1</title>
-      <link>http://localhost:50748/tags/tag1/</link>
+      <link>https://susan-blogs.pages.dev/tags/tag1/</link>
       <pubDate>Wed, 06 Nov 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:50748/tags/tag1/</guid>
+      <guid>https://susan-blogs.pages.dev/tags/tag1/</guid>
       <description></description>
     </item>
     <item>
       <title>Tag2</title>
-      <link>http://localhost:50748/tags/tag2/</link>
+      <link>https://susan-blogs.pages.dev/tags/tag2/</link>
       <pubDate>Wed, 06 Nov 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:50748/tags/tag2/</guid>
+      <guid>https://susan-blogs.pages.dev/tags/tag2/</guid>
       <description></description>
     </item>
   </channel>
