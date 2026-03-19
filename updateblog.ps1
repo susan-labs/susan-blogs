@@ -135,11 +135,9 @@ if ($SkipPush) {
     Write-Host "Skipping push to main (SkipPush set)." -ForegroundColor Yellow
 } else {
     Write-Host "Deploying to GitHub Main..."
-    try {
-        git push origin main
-    } catch {
-        Write-Error "Failed to push to Main branch."
-        exit 1
+    git push origin main
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Failed to push to Main branch. Continuing to subtree deploy if requested."
     }
 }
 
@@ -153,28 +151,63 @@ if ($UseSubtreeDeploy) {
 
     Write-Host "Deploying public folder to branch '$SubtreeBranch'..."
 
+    $currentBranch = (git rev-parse --abbrev-ref HEAD).Trim()
+    $tmpSourceBranch = "subtree-source"
     $tmpBranch = "subtree-deploy"
-    $branchExists = git branch --list $tmpBranch
-    if ($branchExists) {
-        git branch -D $tmpBranch
+
+    if (git branch --list $tmpSourceBranch) {
+        git branch -D $tmpSourceBranch | Out-Null
+    }
+    if (git branch --list $tmpBranch) {
+        git branch -D $tmpBranch | Out-Null
     }
 
-    try {
-        git subtree split --prefix public -b $tmpBranch
-    } catch {
+    # Commit fresh public output on a temporary branch so subtree split includes latest build files.
+    git checkout -b $tmpSourceBranch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to create temporary source branch."
+        exit 1
+    }
+
+    git add -f public
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to stage public folder for subtree deploy."
+        git checkout $currentBranch | Out-Null
+        git branch -D $tmpSourceBranch | Out-Null
+        exit 1
+    }
+
+    $hasPublicStagedChanges = (git diff --cached --name-only -- public) -ne ""
+    if ($hasPublicStagedChanges) {
+        git commit -m "Build public for $SubtreeBranch deploy on $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to commit temporary public build changes."
+            git checkout $currentBranch | Out-Null
+            git branch -D $tmpSourceBranch | Out-Null
+            exit 1
+        }
+    }
+
+    git subtree split --prefix public -b $tmpBranch | Out-Null
+    if ($LASTEXITCODE -ne 0) {
         Write-Error "Subtree split failed."
+        git checkout $currentBranch | Out-Null
+        git branch -D $tmpSourceBranch | Out-Null
         exit 1
     }
 
-    try {
-        git push origin "$tmpBranch`:$SubtreeBranch" --force
-    } catch {
+    git push origin "$tmpBranch`:$SubtreeBranch" --force
+    if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to push subtree branch."
-        git branch -D $tmpBranch
+        git checkout $currentBranch | Out-Null
+        git branch -D $tmpSourceBranch | Out-Null
+        git branch -D $tmpBranch | Out-Null
         exit 1
     }
 
-    git branch -D $tmpBranch
+    git checkout $currentBranch | Out-Null
+    git branch -D $tmpSourceBranch | Out-Null
+    git branch -D $tmpBranch | Out-Null
 }
 
 Write-Host "All done! Site synced, processed, committed, built, and deployed to main."
