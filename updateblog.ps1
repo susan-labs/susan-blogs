@@ -1,7 +1,7 @@
 param(
     [string]$SourcePath = "C:\MyBlogs\MyBlogs\BlogPosts",
     [string]$DestinationPath = "",
-    [string]$RepoUrl = "git@github.com:susan-labs/susankhanal-blog.git",
+    [string]$RepoUrl = "git@github.com:susan-labs/susan-blogs.git",
     [switch]$SkipCommit,
     [switch]$SkipPush,
     [switch]$UseSubtreeDeploy,
