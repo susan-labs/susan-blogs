@@ -1,4 +1,4 @@
-baseURL = "https://blogs.susankhanal.com/"
+baseURL = "/"
 languageCode = "en-us"
 theme = "terminal"
 
